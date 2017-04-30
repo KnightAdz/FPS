@@ -1,14 +1,25 @@
 import Card_class
+from random import shuffle
 
 class Deck:
-    def __init__(self, name, cards):
+    def __init__(self, name, cards=[]):
         # Return a Deck object whose name is *name* and that contains the list of *cards*
         self.name = name
-        self.cards = cards
+        #self.cards = cards
+        self.cards = list()
+        if cards != []:
+            self.cards.append(cards)
+
+    def list_cards(self):
+        if len(self.cards) == 0:
+            print("No cards")
+        else:
+            for i in range(0,len(self.cards)):
+                print(i,self.cards[i])
 
     def shuffle(self):
         # Sort the list of cards in random order
-        return 1
+        shuffle(self.cards)
 
     def get_size(self):
         # Return number of cards in deck
@@ -29,9 +40,10 @@ class Deck:
             deck.empty(self)
         return drawn_cards
 
-    def add_to_top(self,new_cards):
+    def add_to_top(self,new_cards,copies=1):
         # Add list of cards to top of this deck
-        self.cards = self.cards + new_cards
+        for i in range(0,copies):
+            self.cards.append(new_cards)
 
     def combine_with(self, other_deck, shuffle=1):
         # Combine two decks to make one deck

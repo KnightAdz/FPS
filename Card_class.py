@@ -1,12 +1,16 @@
 #Main Card class
 class Card:
-    def __init__(self, name, cost=0.0, damage=0, health=0, type=0):
+    def __init__(self, name, type="Action",subtype=0,rows_in_range=[1,1,1,1],clip_size=0,health=99,num_targets=1,damage=0,text="",):
         # Return a Card object whose name is *name* etc.
         self.name = name
-        self.cost = cost
+        self.type = type
+        self.subtype = subtype
+        self.rows_in_range = rows_in_range
+        self.clip_size = clip_size
         self.damage = damage
         self.health = health
-        self.type = type
+        self.num_targets = num_targets
+        self.text=text
 
     def take_damage(self,damage_taken):
         self.health = self.health - damage_taken
@@ -21,25 +25,25 @@ class Card:
         # Load card attributes from csv file
 
 #Enemy card is a subclass of Card
-class EnemyCard(Card):
-    def __init__(self,name,damage=1,health=1):
-        Card.__init__(self,name,0,damage,health,type="Enemy")
-        self.col_location=0
-        self.row_location=0
-        self.col_target=0
+#class EnemyCard(Card):
+#    def __init__(self,name,damage=1,health=1):
+#        Card.__init__(self,name,0,damage,health,type="Enemy")
+#        self.col_location=0
+#        self.row_location=0
+#        self.col_target=0
 
-    def assign_location(self,row,col):
-        self.row_location = row
-        self.col_location = col
+#    def assign_location(self,row,col):
+#        self.row_location = row
+#        self.col_location = col
 
 #Equipment card
-class EquipCard(Card):
-    def __init__(self,name,type,damage=1, clip_size=0,armour=0):
-        Card.__init__(self, name, 0, damage, type)
-        self.rows_in_range = [1,1,0,0]
+#class EquipCard(Card):
+#    def __init__(self,name,type,damage=1, clip_size=0,armour=0):
+#        Card.__init__(self, name, 0, damage, type)
+#        self.rows_in_range = [1,1,0,0]
         #Guns will have clip_size > 0 to determine how many cards are drawn
-        self.clip_size = clip_size
-        self.armour = armour
+#        self.clip_size = clip_size
+#        self.armour = armour
 
     #Armour card
 
@@ -48,9 +52,9 @@ class EquipCard(Card):
 
 
 #Action card
-class ActionCard(Card):
-    def __init__(self,name,cost):
-        Card.__init__(self,name,cost,0,0,type="Action")
+#class ActionCard(Card):
+#    def __init__(self,name,cost):
+#        Card.__init__(self,name,cost,0,0,type="Action")
 
 
 

@@ -1,0 +1,32 @@
+Index,Name,Type,Subtype,row1,row2,row3,row4,clip size,health,no. targets,damage,Text,precision shot
+1,Pistol,Weapon,,1,1,0,0,3,99,1,1,Standard issue,damage is 2
+2,Uzi,Weapon,machine gun,1,1,0,0,3,99,3,1,Short range automatic weapon,hit all on first filled row
+3,Shotgun,Weapon,loud,1,0,0,0,2,99,1,3,Close quarters only,
+4,Assault Rifle,Weapon,machine gun,1,1,1,0,3,99,3,2,,hit all on first 2 rows
+5,Battle Rifle,Weapon,,1,1,1,1,3,99,1,2,Versatile,damage is 4
+6,Sniper Rifle,Weapon,,0,0,1,1,1,99,1,5,,hit all enemies in line to target
+7,Rocket Launcher,Weapon,explosive,0,1,1,0,1,99,3,5,,hit all surrounding enemies for 3 damage. if enemies affected are in cover they take no damage and lose cover for next turn
+8,Frag Grenade,Action,explosive,0,1,1,0,0,99,1,2,choose one enemy. deal 2 damage to that enemy and adjacent enemies. if they are in cover they take no damage but lose cover for next turn,
+9,Flash Bang Grenade,Action,loud,1,1,0,0,0,99,1,0,enemies in nearest row miss next turn,
+10,Smoke Grenade,Action,,1,1,0,0,0,99,1,0,choose a column. enemies in that column miss next turn,
+11,Helmet,Armour,,1,1,1,1,0,2,1,0,,
+12,Body Armour,Armour,,1,1,1,1,0,4,1,0,,
+13,Grunt,Enemy,,1,1,1,1,0,1,1,1,,
+14,Grenadier,Enemy,,1,1,1,0,0,1,4,3,Deals damage to all players,
+15,Shield Guy,Enemy,,1,1,0,0,0,2,1,1,is considered in cover while has shield. shield has 1 health and must be destroyed first,
+16,Commander,Enemy,,0,0,0,1,0,5,1,3,,
+17,Cover,Environment,,1,1,1,0,0,99,0,0,can only be destroyed by rocket launcher or red barrel,
+18,Red Barrel,Environment,,1,1,1,1,0,2,4,3,"if destroyed by any weapon, deals 5 damage to surrounding enemies",
+19,Sniper,Enemy,,0,0,1,1,0,1,1,4,,
+20,Shot,Action,,1,1,1,1,0,99,1,1,choose one of your weapons and fire,
+21,Precision Shot,Action,,1,1,1,1,0,99,1,2,do precision shot of one of your weapons,
+22,Enter Cover,Action,,1,1,1,1,0,99,1,0,"to be played at end of turn, negates any damage before next turn",
+23,Tactical Movement,Action,,1,1,1,1,0,99,1,0,negate enemy cover / reveal to dodge enemy grenade,
+24,First Aid,Action,,1,1,1,1,0,99,2,-4,choose one other player to heal by 4 points of health,
+25,Adrenaline Injection,Action,,1,1,1,1,0,99,1,-2,heal self by 2 points of health,
+26,Hide,Action,,1,1,1,1,0,99,1,0,allow shield to recharge,
+27,Reload,Action,,1,1,1,1,0,99,1,0,discard any number of cards and draw that number of cards,
+28,Take Cover,Action,,1,1,1,1,0,99,2,0,choose one other player and take their damage on next turn instead of them (damage is halved?),
+29,Coordination,Action,,1,1,1,1,0,99,2,0,if another player can reveal this card they get a free shot now,
+30,Stealth,Action,,1,1,1,1,0,99,1,0,fire without alerting neighbouring enemies (explosives and loud weapons excluded),
+31,Mark Target,Action,,1,1,1,1,0,99,1,0,"choose an enemy, this enemy takes double damage on next players turn",
