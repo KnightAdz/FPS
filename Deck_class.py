@@ -9,8 +9,8 @@ class Deck:
         self.cards = list()
         if cards != []:
             for i in range(0,len(cards)):
-                self.cards.append(Card(cards[i].name, cards[i].subtype, cards[i].rows_in_range, cards[i].clip_size,
-                                        cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text))
+                self.cards.append(Card(cards[i].name,cards[i].type,cards[i].subtype,cards[i].rows_in_range,
+                                       cards[i].clip_size,cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text))
 
     def list_cards(self):
         if len(self.cards) == 0:

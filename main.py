@@ -14,12 +14,16 @@ GRID_HEIGHT = 4
 #Card reference numbers
 CT_PISTOL = 0
 CT_UZI = 1
+CT_SHOTGUN = 2
 CT_SHOT = 19
 CT_TACT = 22 # Tactical movement
 CT_ENTCOV = 21 # Enter cover
 
 CT_GRUNT = 12
 CT_COMMANDER = 15
+
+CT_WALL = 16
+CT_BARREL = 17
 
 def Load_cards():
     # Load card stats from CSV file
@@ -33,8 +37,7 @@ def Load_cards():
                           cards_df.loc[i, "clip size"],cards_df.loc[i,"health"],
                           cards_df.loc[i, "no. targets"],cards_df.loc[i,"damage"],
                           cards_df.loc[i, "Text"]))
-        print(len(card_types), " ", card_types[len(card_types)-1])
-
+        #print(len(card_types), " ", card_types[len(card_types)-1])
     return card_types
 
 def Setup_game(n_players):
@@ -51,9 +54,11 @@ def Setup_game(n_players):
     level_deck = Deck("Level deck")
     level_deck.add_to_top(card_types[CT_GRUNT],num_players*10)
     level_deck.add_to_top(card_types[CT_COMMANDER],num_players)
+    level_deck.add_to_top(card_types[CT_SHOTGUN],num_players)
     level_deck.shuffle()
-    print("Level deck contains:")
-    level_deck.list_cards()
+    level_deck.add_to_top(card_types[CT_WALL], num_players)
+    #print("Level deck contains:")
+    #level_deck.list_cards()
 
     # Create a default player deck
     starting_deck = Deck("Starting deck")
@@ -61,16 +66,15 @@ def Setup_game(n_players):
     starting_deck.add_to_top(card_types[CT_TACT])
     starting_deck.add_to_top(card_types[CT_ENTCOV])
 
-
     # Create the players and their decks
     players = []
     for i in range(0,n_players):
         players.append(Player("Player "+str(i+1),starting_deck,i+1, weapon1=card_types[CT_PISTOL]))
         print("Player %d has joined the game" % len(players))
         players[i].draw_new_hand()
-        #players[i].list_deck()
-        #players[i].list_discard_pile()
-        players[i].list_hand()
+        # players[i].list_deck()
+        # players[i].list_discard_pile()
+        # players[i].list_hand()
 
     return players, level_deck
 
@@ -84,14 +88,28 @@ def Load_level(level_n):
     i = 0
     x = 0
     y = 0
+    coverx = []
+    covery = []
     while i < len(this_level_cards):
-        level_grid[y][x] = this_level_cards[i]
-        #print(y, x, level_grid[y][x])
-        i+=1
-        x+=1
-        if x >= GRID_WIDTH:
-            x = 0
-            y += 1
+        if this_level_cards[i].type == "Enemy" or this_level_cards[i].type == "Environment":
+            level_grid[y][x] = Card(this_level_cards[i].name,this_level_cards[i].type,this_level_cards[i].subtype,this_level_cards[i].rows_in_range,
+                                    this_level_cards[i].clip_size,this_level_cards[i].health,
+                                    this_level_cards[i].num_targets,this_level_cards[i].damage,this_level_cards[i].text)
+            # Keep track of which enemies are in cover due to the environment
+            if this_level_cards[i].type == "Environment":
+                coverx.append(x)
+                covery.append(y)
+
+            for j in range(0,len(coverx)):
+                if y > covery[j] and x == coverx[j] and isinstance(level_grid[y][x],Card):
+                    level_grid[y][x].in_cover = True
+
+            #print(y, x, level_grid[y][x])
+            i += 1
+            x += 1
+            if x >= GRID_WIDTH:
+                x = 0
+                y += 1
 
     return level_grid
 
@@ -100,12 +118,32 @@ def Display_level_grid(level_grid):
     for y in range(GRID_HEIGHT-1,-1,-1):
         pstr = ""
         for x in range(0,GRID_WIDTH):
-            if level_grid[y][x]==[]:
+            pstr += str(y*GRID_WIDTH + x) + " "
+            if not isinstance(level_grid[y][x],Card):
+                # Print empty space
                 pstr += "[\t\t\t]"
             else:
+                if level_grid[y][x].in_cover:
+                    pstr += "("
                 pstr += str(level_grid[y][x])
+                if level_grid[y][x].in_cover:
+                    pstr += ")"
             pstr += "\t\t"
         print(pstr)
+
+def Enemy_turn(level_grid,players,GRID_WIDTH):
+    for y in range(GRID_HEIGHT-1,-1,-1):
+        for x in range(0,GRID_WIDTH):
+            if isinstance(level_grid[y][x],Card):
+                if level_grid[y][x].retaliate:
+                    target = players[level_grid[y][x].target]
+                    print(level_grid[y][x].name, " retaliates against ", target.name)
+                    if target.in_cover:
+                        print(target.name, " is in cover and takes no damage")
+                    else:
+                        target.health -= level_grid[y][x].damage
+                        print(target.name," takes ",level_grid[y][x].damage," damage and has ",target.health," health remaining")
+                    level_grid[y][x].retaliate = False
 
 
 def Next_level_prep():
@@ -124,9 +162,8 @@ def Enemies_alive(level_grid):
                     return True
     return False
 
-
 #Game loop
-while quit == False:
+while not quit:
     # Define number of players
     #num_players = input('How many players?')
     num_players = 2
@@ -138,20 +175,21 @@ while quit == False:
     while level <= MAX_LEVEL:
         level_grid = Load_level(level)
         while Enemies_alive(level_grid):
-            Display_level_grid(level_grid)
             for i in range(0,num_players):
-                players[i].take_turn()
-            #Enemy_turn()
-            #if all_players_dead:
-            #    quit = True
+                if Enemies_alive(level_grid):
+                    Display_level_grid(level_grid)
+                    players[i].take_turn(level_grid,players,GRID_WIDTH)
+                    Enemy_turn(level_grid,players,GRID_WIDTH)
+                    #if all_players_dead:
+                    #    quit = True
         #If enemies dead, level is complete (##LATER: To be changed to when level+1 card is drawn)
         Next_level_prep()
         level = level+1
-        if input('Continue?') == 'n':
+        print("Now at Level ", level)
+        if input( "Continue?") == 'n':
+            level = MAX_LEVEL+1
             quit = True
 
     #If level > max_level, players have won!
-    msg('You win!')
+    print('You win!')
     quit = True
-
-

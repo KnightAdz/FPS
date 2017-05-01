@@ -16,6 +16,9 @@ class Player:
         self.discard_deck = Deck(self.name + " discard pile")
         self.col_location = player_num
         self.player_deck.shuffle()
+        self.player_num = player_num
+
+        self.in_cover = False
 
     def __str__(self):
         print(self.name + ' has %d health' % self.health)
@@ -56,9 +59,10 @@ class Player:
     def shuffle_deck(self):
         self.player_deck.combine_with(self.discard_deck, shuffle=1)
 
-    def take_turn(self):
+    def take_turn(self,level_grid,players,GRID_WIDTH):
         print(self.name + "'s turn")
         end_turn = False
+        self.in_cover = False
         self.list_hand()
         while end_turn == False:
             card_to_play = int(input("Choose card to play: "))
@@ -67,20 +71,24 @@ class Player:
             else:
                 # Play the card
                 print(self.hand.cards[card_to_play], " played")
+                self.hand.cards[card_to_play].action(level_grid,players,self.player_num-1,GRID_WIDTH)
                 # Add to discard pile
                 self.discard_deck.cards.append(self.hand.cards[card_to_play])
                 # Remove from hand
                 del(self.hand.cards[card_to_play])
-                # Remind of hand
-                self.list_hand()
+                if len(self.hand.cards) == 0:
+                    end_turn = True
+                else:
+                    # Remind of hand for choosing another card
+                    self.list_hand()
+
         #Discard any remaining cards
         for i in range(0,len(self.hand.cards)):
-            self.discard_deck.cards.append(self.hands.cards[i])
-        self.hands.empty()
+            self.discard_deck.cards.append(self.hand.cards[i])
+
         #Draw new hand
         if len(self.hand.cards) == 0:
             self.draw_new_hand()
-
-
-
-
+        else:
+            self.hand.empty()
+            self.draw_new_hand()
