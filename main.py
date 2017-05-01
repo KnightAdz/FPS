@@ -47,20 +47,6 @@ def Setup_game(n_players):
     # Load cards to create decks from
     card_types = Load_cards()
 
-    # Create a default player deck
-    starting_deck = Deck("Starting deck")
-    starting_deck.add_to_top(card_types[CT_SHOT],4)
-    starting_deck.add_to_top(card_types[CT_TACT])
-    starting_deck.add_to_top(card_types[CT_ENTCOV])
-
-    # Create the players and their decks
-    players = []
-    for i in range(0,n_players):
-        players.append(Player("Player "+str(i+1),starting_deck,i+1))
-        print("Player %d has joined the game" % len(players))
-        players[i].list_deck()
-
-
     # Create the level deck
     level_deck = Deck("Level deck")
     level_deck.add_to_top(card_types[CT_GRUNT],num_players*10)
@@ -69,19 +55,58 @@ def Setup_game(n_players):
     print("Level deck contains:")
     level_deck.list_cards()
 
-    players[1].player_deck.cards[0].name = "Changed"
+    # Create a default player deck
+    starting_deck = Deck("Starting deck")
+    starting_deck.add_to_top(card_types[CT_SHOT],4)
+    starting_deck.add_to_top(card_types[CT_TACT])
+    starting_deck.add_to_top(card_types[CT_ENTCOV])
 
-    players[0].list_deck()
-    players[0].list_discard_pile()
+
+    # Create the players and their decks
+    players = []
+    for i in range(0,n_players):
+        players.append(Player("Player "+str(i+1),starting_deck,i+1, weapon1=card_types[CT_PISTOL]))
+        print("Player %d has joined the game" % len(players))
+        players[i].draw_new_hand()
+        #players[i].list_deck()
+        #players[i].list_discard_pile()
+        players[i].list_hand()
 
     return players, level_deck
 
 def Load_level(level_n):
     # Number of level cards should scale up to 16 (##LATER: could be enemies?)
     num_cards = level_n*2 + 4
-    # Draw cards from the levek deck
-    this_level_cards = level_deck.draw_cards(num_cards)
-    #Create level grid
+    # Draw cards from the level deck
+    this_level_cards = level_deck.draw_from(num_cards)
+    # Create level grid
+    level_grid = [[[] for j in range(GRID_WIDTH)] for i in range(GRID_HEIGHT)]
+    i = 0
+    x = 0
+    y = 0
+    while i < len(this_level_cards):
+        level_grid[y][x] = this_level_cards[i]
+        #print(y, x, level_grid[y][x])
+        i+=1
+        x+=1
+        if x >= GRID_WIDTH:
+            x = 0
+            y += 1
+
+    return level_grid
+
+def Display_level_grid(level_grid):
+    print("Level Grid:")
+    for y in range(GRID_HEIGHT-1,-1,-1):
+        pstr = ""
+        for x in range(0,GRID_WIDTH):
+            if level_grid[y][x]==[]:
+                pstr += "[\t\t\t]"
+            else:
+                pstr += str(level_grid[y][x])
+            pstr += "\t\t"
+        print(pstr)
+
 
 def Next_level_prep():
     x = 0
@@ -90,12 +115,14 @@ def Next_level_prep():
     #Swap equipment
     #Define order
 
-def Enemies_alive():
+def Enemies_alive(level_grid):
     #Check the enemy grid for alive enemy cards
-    #enemies_alive = False
-    #if level_deck.size() > 0: ##LATER: this won't consider environment cards
-    enemies_alive = True
-    return enemies_alive
+    for y in range(0,GRID_HEIGHT):
+        for x in range(0,GRID_WIDTH):
+            if level_grid[y][x]!=[]:
+                if level_grid[y][x].health > 0:
+                    return True
+    return False
 
 
 #Game loop
@@ -110,9 +137,10 @@ while quit == False:
     level = 1
     while level <= MAX_LEVEL:
         level_grid = Load_level(level)
-        while Enemies_alive():
-            for i in range(1,num_players):
-                players[i].Take_turn()
+        while Enemies_alive(level_grid):
+            Display_level_grid(level_grid)
+            for i in range(0,num_players):
+                players[i].take_turn()
             #Enemy_turn()
             #if all_players_dead:
             #    quit = True

@@ -1,6 +1,6 @@
 #Main Card class
 class Card:
-    def __init__(self, name, type="Action",subtype=0,rows_in_range=[1,1,1,1],clip_size=0,health=99,num_targets=1,damage=0,text="",):
+    def __init__(self, name, type="Action",subtype=0,rows_in_range=[1,1,1,1],clip_size=0,health=99,num_targets=1,damage=0,text=""):
         # Return a Card object whose name is *name* etc.
         self.name = name
         self.type = type
@@ -19,7 +19,10 @@ class Card:
         targets.health = target.health - self.damage
 
     def __str__(self):
-        return self.name
+        if self.type == "Enemy":
+            return self.name + " H:" + str(self.health) + " D:" + str(self.damage)
+        else:
+            return self.name
 
     #def load_from_file(self):
         # Load card attributes from csv file

@@ -1,4 +1,4 @@
-import Card_class
+from Card_class import Card
 from random import shuffle
 
 class Deck:
@@ -8,7 +8,9 @@ class Deck:
         #self.cards = cards
         self.cards = list()
         if cards != []:
-            self.cards.append(cards)
+            for i in range(0,len(cards)):
+                self.cards.append(Card(cards[i].name, cards[i].subtype, cards[i].rows_in_range, cards[i].clip_size,
+                                        cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text))
 
     def list_cards(self):
         if len(self.cards) == 0:
@@ -31,19 +33,24 @@ class Deck:
 
         # Check if we can draw needed amount of cards
         if num_cards < self.get_size():
-            drawn_cards = self.cards[0:num_cards-1]
-            self.cards = self.cards[num_cards:-1]
-
+            drawn_cards = self.cards[0:num_cards]
+            self.cards = self.cards[num_cards:]
         else:
             #Draw what we can
             drawn_cards = self.cards
-            deck.empty(self)
+            self.empty()
         return drawn_cards
 
-    def add_to_top(self,new_cards,copies=1):
+    def add_to_top(self,cards,copies=1):
         # Add list of cards to top of this deck
-        for i in range(0,copies):
-            self.cards.append(new_cards)
+        if isinstance(cards, Card):
+            for j in range(0, copies):
+                self.cards.append(cards)
+        else:
+            for j in range(0,copies):
+                for i in range(0,len(cards)):
+                    self.cards.append(Card(cards[i].name, cards[i].subtype, cards[i].rows_in_range, cards[i].clip_size,
+                                        cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text))
 
     def combine_with(self, other_deck, shuffle=1):
         # Combine two decks to make one deck
