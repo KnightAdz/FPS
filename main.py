@@ -3,6 +3,7 @@ from Deck_class import Deck
 from Card_class import Card
 import pandas as pd
 import tkinter
+from random import shuffle
 
 #
 # Globals
@@ -127,28 +128,29 @@ def Load_level(level_n):
     return level_grid
 
 def Display_level_grid(level_grid, this_player):
-    print("Level Grid:")
+    #print("Level Grid:")
     lootstr = ""
+    pstr = ""
     for y in range(GRID_HEIGHT-1,-1,-1):
-        pstr = ""
-
         for x in range(0,GRID_WIDTH):
             id = y*GRID_WIDTH + x
             pstr += str(id) + " "
             if not isinstance(level_grid[y][x],Card):
                 # Print empty space
-                pstr += "[\t\t\t]"
+                pstr += "[\t\t]"
             else:
-                if level_grid[y][x].in_cover_to[i]:
+                if level_grid[y][x].in_cover_to[this_player]:
                     pstr += "("
                 pstr += str(level_grid[y][x])
-                if level_grid[y][x].in_cover_to[i]:
+                if level_grid[y][x].in_cover_to[this_player]:
                     pstr += ")"
                 if isinstance(level_grid[y][x].loot,Card):
                     lootstr += "Enemy " + str(id) + " has a " + level_grid[y][x].loot.name + "\n"
             pstr += "\t\t"
-        print(pstr)
-    print(lootstr)
+        pstr += "\n"
+
+    pstr = pstr+lootstr
+    level_grid_lbl.configure(text=pstr)
 
 def Enemy_turn(level_grid,players,GRID_WIDTH):
     for y in range(GRID_HEIGHT-1,-1,-1):
@@ -191,8 +193,10 @@ while not quit:
     # Create a window to display text
     window = tkinter.Tk()
 
-    # Create some labels for displaying various parts of the ganme
+    # Create some labels for displaying various parts of the game
     level_grid_lbl = tkinter.Label(window, text="Level")
+    level_grid = Load_level(1)
+    Display_level_grid(level_grid, 0)
     level_grid_lbl.pack()
     for i in range(0,num_players):
         player_lbl = tkinter.Label(window, text="Player"+str(i+1))
