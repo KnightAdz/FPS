@@ -83,6 +83,10 @@ def Load_level(level_n):
     num_cards = level_n*2 + 4
     # Draw cards from the level deck
     this_level_cards = level_deck.draw_from(num_cards)
+    # Make sure an enemy comes before a weapon
+    while this_level_cards[0].type == "Weapon" or (this_level_cards[1] == "Weapon" and this_level_cards[0].type != "Enemy"):
+        shuffle(this_level_cards)
+
     # Create level grid
     level_grid = [[[] for j in range(GRID_WIDTH)] for i in range(GRID_HEIGHT)]
     i = 0
@@ -90,6 +94,7 @@ def Load_level(level_n):
     y = 0
     coverx = []
     covery = []
+    last_enemy_loc = [0,0]
     while i < len(this_level_cards):
         if this_level_cards[i].type == "Enemy" or this_level_cards[i].type == "Environment":
             level_grid[y][x] = Card(this_level_cards[i].name,this_level_cards[i].type,this_level_cards[i].subtype,this_level_cards[i].rows_in_range,
@@ -99,43 +104,70 @@ def Load_level(level_n):
             if this_level_cards[i].type == "Environment":
                 coverx.append(x)
                 covery.append(y)
+            else:
+                last_enemy_loc = [x,y]
 
             for j in range(0,len(coverx)):
                 if y > covery[j] and x == coverx[j] and isinstance(level_grid[y][x],Card):
-                    level_grid[y][x].in_cover = True
+                    level_grid[y][x].in_cover_to = [1,1,1,1] # All players
 
-            #print(y, x, level_grid[y][x])
-            i += 1
             x += 1
             if x >= GRID_WIDTH:
                 x = 0
                 y += 1
+        elif this_level_cards[i].type == "Weapon":
+            # Record the number of the target that has the same space as the weapon
+            level_grid[last_enemy_loc[1]][last_enemy_loc[0]].loot = Card(this_level_cards[i].name,this_level_cards[i].type,this_level_cards[i].subtype,this_level_cards[i].rows_in_range,
+                                                                        this_level_cards[i].clip_size,this_level_cards[i].health,
+                                                                        this_level_cards[i].num_targets,this_level_cards[i].damage,this_level_cards[i].text)
+            level_grid[last_enemy_loc[1]][last_enemy_loc[0]].damage += this_level_cards[i].damage-1
+        i += 1
 
     return level_grid
 
-def Display_level_grid(level_grid):
+def Display_level_grid(level_grid, this_player):
     print("Level Grid:")
+    lootstr = ""
     for y in range(GRID_HEIGHT-1,-1,-1):
         pstr = ""
+
         for x in range(0,GRID_WIDTH):
-            pstr += str(y*GRID_WIDTH + x) + " "
+            id = y*GRID_WIDTH + x
+            pstr += str(id) + " "
             if not isinstance(level_grid[y][x],Card):
                 # Print empty space
                 pstr += "[\t\t\t]"
             else:
-                if level_grid[y][x].in_cover:
+                if level_grid[y][x].in_cover_to[i]:
                     pstr += "("
                 pstr += str(level_grid[y][x])
-                if level_grid[y][x].in_cover:
+                if level_grid[y][x].in_cover_to[i]:
                     pstr += ")"
+                if isinstance(level_grid[y][x].loot,Card):
+                    lootstr += "Enemy " + str(id) + " has a " + level_grid[y][x].loot.name + "\n"
             pstr += "\t\t"
         print(pstr)
+    print(lootstr)
 
 def Enemy_turn(level_grid,players,GRID_WIDTH):
     for y in range(GRID_HEIGHT-1,-1,-1):
         for x in range(0,GRID_WIDTH):
             if isinstance(level_grid[y][x],Card):
-                if level_grid[y][x].retaliate:
+                if level_grid[y][x].retaliate and level_grid[y][x].health > 0:
+                    target = players[level_grid[y][x].target]
+                    print(level_grid[y][x].name, " retaliates against ", target.name)
+                    if target.in_cover:
+                        print(target.name, " is in cover and takes no damage")
+                    else:
+                        target.health -= level_grid[y][x].damage
+                        print(target.name," takes ",level_grid[y][x].damage," damage and has ",target.health," health remaining")
+                    level_grid[y][x].retaliate = False
+
+def Enemy_turn(level_grid,players,GRID_WIDTH):
+    for y in range(GRID_HEIGHT-1,-1,-1):
+        for x in range(0,GRID_WIDTH):
+            if isinstance(level_grid[y][x],Card):
+                if level_grid[y][x].retaliate and level_grid[y][x].health > 0:
                     target = players[level_grid[y][x].target]
                     print(level_grid[y][x].name, " retaliates against ", target.name)
                     if target.in_cover:
@@ -157,13 +189,17 @@ def Enemies_alive(level_grid):
     #Check the enemy grid for alive enemy cards
     for y in range(0,GRID_HEIGHT):
         for x in range(0,GRID_WIDTH):
-            if level_grid[y][x]!=[]:
-                if level_grid[y][x].health > 0:
+            if isinstance(level_grid[y][x],Card):
+                if level_grid[y][x].type == "Enemy" and level_grid[y][x].health > 0:
                     return True
     return False
 
 #Game loop
 while not quit:
+    #Create a window to display text
+    #window = tkinter.Tk()
+    #window.mainloop()
+
     # Define number of players
     #num_players = input('How many players?')
     num_players = 2
@@ -177,7 +213,7 @@ while not quit:
         while Enemies_alive(level_grid):
             for i in range(0,num_players):
                 if Enemies_alive(level_grid):
-                    Display_level_grid(level_grid)
+                    Display_level_grid(level_grid,i)
                     players[i].take_turn(level_grid,players,GRID_WIDTH)
                     Enemy_turn(level_grid,players,GRID_WIDTH)
                     #if all_players_dead:

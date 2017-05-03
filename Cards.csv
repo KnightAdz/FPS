@@ -1,7 +1,7 @@
 Index,Name,Type,Subtype,row1,row2,row3,row4,clip size,health,no. targets,damage,Text,precision shot
 1,Pistol,Weapon,,1,1,0,0,3,99,1,1,Standard issue,damage is 2
-2,Uzi,Weapon,machine gun,1,1,0,0,3,99,3,1,Short range automatic weapon,hit all on first filled row
-3,Shotgun,Weapon,loud,1,0,0,0,2,99,1,3,Close quarters only,
+2,Uzi,Weapon,machine gun,1,1,0,0,2,99,3,1,Short range automatic weapon,hit all on first filled row
+3,Shotgun,Weapon,loud,1,0,0,0,1,99,1,3,Close quarters only,
 4,Assault Rifle,Weapon,machine gun,1,1,1,0,3,99,3,2,,hit all on first 2 rows
 5,Battle Rifle,Weapon,,1,1,1,1,3,99,1,2,Versatile,damage is 4
 6,Sniper Rifle,Weapon,,0,0,1,1,1,99,1,5,,hit all enemies in line to target
