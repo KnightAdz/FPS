@@ -67,6 +67,7 @@ class Card:
                             players[this_player].weapon2 = target.loot
                         else:
                             print(target.loot.name," was not taken")
+                target.loot = 0
         elif self.name == "Enter Cover":
             players[this_player].in_cover = True
             print("You are now behind cover")

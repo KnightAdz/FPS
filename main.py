@@ -2,6 +2,7 @@ from Player_class import Player
 from Deck_class import Deck
 from Card_class import Card
 import pandas as pd
+import tkinter
 
 #
 # Globals
@@ -80,7 +81,7 @@ def Setup_game(n_players):
 
 def Load_level(level_n):
     # Number of level cards should scale up to 16 (##LATER: could be enemies?)
-    num_cards = level_n*2 + 4
+    num_cards = level_n*2 + 6
     # Draw cards from the level deck
     this_level_cards = level_deck.draw_from(num_cards)
     # Make sure an enemy comes before a weapon
@@ -163,21 +164,6 @@ def Enemy_turn(level_grid,players,GRID_WIDTH):
                         print(target.name," takes ",level_grid[y][x].damage," damage and has ",target.health," health remaining")
                     level_grid[y][x].retaliate = False
 
-def Enemy_turn(level_grid,players,GRID_WIDTH):
-    for y in range(GRID_HEIGHT-1,-1,-1):
-        for x in range(0,GRID_WIDTH):
-            if isinstance(level_grid[y][x],Card):
-                if level_grid[y][x].retaliate and level_grid[y][x].health > 0:
-                    target = players[level_grid[y][x].target]
-                    print(level_grid[y][x].name, " retaliates against ", target.name)
-                    if target.in_cover:
-                        print(target.name, " is in cover and takes no damage")
-                    else:
-                        target.health -= level_grid[y][x].damage
-                        print(target.name," takes ",level_grid[y][x].damage," damage and has ",target.health," health remaining")
-                    level_grid[y][x].retaliate = False
-
-
 def Next_level_prep():
     x = 0
     #Heal up
@@ -196,15 +182,25 @@ def Enemies_alive(level_grid):
 
 #Game loop
 while not quit:
-    #Create a window to display text
-    #window = tkinter.Tk()
-    #window.mainloop()
-
     # Define number of players
     #num_players = input('How many players?')
     num_players = 2
     # Create the players and their decks, and the level deck
     players, level_deck = Setup_game(num_players)
+
+    # Create a window to display text
+    window = tkinter.Tk()
+
+    # Create some labels for displaying various parts of the ganme
+    level_grid_lbl = tkinter.Label(window, text="Level")
+    level_grid_lbl.pack()
+    for i in range(0,num_players):
+        player_lbl = tkinter.Label(window, text="Player"+str(i+1))
+        player_lbl.pack()
+    actions_lbl = tkinter.Label(window, text="Actions")
+    actions_lbl.pack()
+
+    window.mainloop()
 
     #Begin the game at level 1
     level = 1
