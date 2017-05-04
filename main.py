@@ -1,17 +1,13 @@
 from Player_class import Player
 from Deck_class import Deck
 from Card_class import Card
+from GUI_class import GUI
+from globals import *
 import pandas as pd
-import tkinter
 from random import shuffle
 
-#
-# Globals
-#
 quit = False
 MAX_LEVEL = 4
-GRID_WIDTH = 4
-GRID_HEIGHT = 4
 
 #Card reference numbers
 CT_PISTOL = 0
@@ -127,31 +123,6 @@ def Load_level(level_n):
 
     return level_grid
 
-def Display_level_grid(level_grid, this_player):
-    #print("Level Grid:")
-    lootstr = ""
-    pstr = ""
-    for y in range(GRID_HEIGHT-1,-1,-1):
-        for x in range(0,GRID_WIDTH):
-            id = y*GRID_WIDTH + x
-            pstr += str(id) + " "
-            if not isinstance(level_grid[y][x],Card):
-                # Print empty space
-                pstr += "[\t\t]"
-            else:
-                if level_grid[y][x].in_cover_to[this_player]:
-                    pstr += "("
-                pstr += str(level_grid[y][x])
-                if level_grid[y][x].in_cover_to[this_player]:
-                    pstr += ")"
-                if isinstance(level_grid[y][x].loot,Card):
-                    lootstr += "Enemy " + str(id) + " has a " + level_grid[y][x].loot.name + "\n"
-            pstr += "\t\t"
-        pstr += "\n"
-
-    pstr = pstr+lootstr
-    level_grid_lbl.configure(text=pstr)
-
 def Enemy_turn(level_grid,players,GRID_WIDTH):
     for y in range(GRID_HEIGHT-1,-1,-1):
         for x in range(0,GRID_WIDTH):
@@ -190,21 +161,8 @@ while not quit:
     # Create the players and their decks, and the level deck
     players, level_deck = Setup_game(num_players)
 
-    # Create a window to display text
-    window = tkinter.Tk()
 
-    # Create some labels for displaying various parts of the game
-    level_grid_lbl = tkinter.Label(window, text="Level")
-    level_grid = Load_level(1)
-    Display_level_grid(level_grid, 0)
-    level_grid_lbl.pack()
-    for i in range(0,num_players):
-        player_lbl = tkinter.Label(window, text="Player"+str(i+1))
-        player_lbl.pack()
-    actions_lbl = tkinter.Label(window, text="Actions")
-    actions_lbl.pack()
-
-    window.mainloop()
+    gui = GUI(num_players)
 
     #Begin the game at level 1
     level = 1
@@ -213,8 +171,8 @@ while not quit:
         while Enemies_alive(level_grid):
             for i in range(0,num_players):
                 if Enemies_alive(level_grid):
-                    Display_level_grid(level_grid,i)
-                    players[i].take_turn(level_grid,players,GRID_WIDTH)
+                    gui.Display_level_grid(level_grid,i)
+                    players[i].take_turn(level_grid,players,gui)
                     Enemy_turn(level_grid,players,GRID_WIDTH)
                     #if all_players_dead:
                     #    quit = True

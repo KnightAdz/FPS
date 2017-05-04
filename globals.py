@@ -1,0 +1,7 @@
+#
+# Globals
+#
+global GRID_WIDTH
+GRID_WIDTH = 4
+global GRID_HEIGHT
+GRID_HEIGHT= 4

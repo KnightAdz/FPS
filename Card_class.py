@@ -1,3 +1,5 @@
+from globals import *
+
 #Main Card class
 class Card:
     def __init__(self, name, type="Action",subtype=0,rows_in_range=[1,1,1,1],clip_size=0,health=99,num_targets=1,damage=0,text=""):

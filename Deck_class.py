@@ -1,5 +1,6 @@
 from Card_class import Card
 from random import shuffle
+from globals import *
 
 class Deck:
     def __init__(self, name, cards=[]):
@@ -13,11 +14,13 @@ class Deck:
                                        cards[i].clip_size,cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text))
 
     def list_cards(self):
+        card_str = ""
         if len(self.cards) == 0:
-            print("No cards")
+            card_str = "No cards"
         else:
             for i in range(0,len(self.cards)):
-                print(i,self.cards[i])
+                card_str += str(i) + ". " + self.cards[i].name + "\n"
+        return card_str
 
     def shuffle(self):
         # Sort the list of cards in random order

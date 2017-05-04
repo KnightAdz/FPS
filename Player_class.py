@@ -1,5 +1,6 @@
 from Deck_class import Deck
 from Card_class import Card
+from globals import *
 
 class Player:
     def __init__(self, name, player_deck, player_num, weapon1='Pistol', health=8):
@@ -45,12 +46,13 @@ class Player:
 
     ### Deck functions
     def list_deck(self):
-        print(self.name," has the following cards in deck:")
-        self.player_deck.list_cards()
+        deck_str = self.name + " has the following cards in deck:\n"
+        deck_str += self.player_deck.list_cards()
+        return deck_str
 
     def list_hand(self):
-        print(self.name," has the following cards in hand:")
-        self.hand.list_cards()
+        hand_str = self.name + " has the following cards in hand:\n"
+        return hand_str + self.hand.list_cards()
 
     def list_discard_pile(self):
             print(self.name, " has discarded the following cards:")
@@ -59,13 +61,13 @@ class Player:
     def shuffle_deck(self):
         self.player_deck.combine_with(self.discard_deck, shuffle=1)
 
-    def take_turn(self,level_grid,players,GRID_WIDTH):
-        print(self.name + "'s turn")
+    def take_turn(self,level_grid,players,gui):
+        gui.DisplayAction(self.name + "'s turn")
         end_turn = False
         self.in_cover = False
-        self.list_hand()
+        gui.Display_player_hand(self)
         while end_turn == False:
-            card_to_play = int(input("Choose card to play: "))
+            card_to_play = int(input("Choose card to play: ")) #int(gui.GetInput("Choose card to play: "))
             if card_to_play >= self.hand.get_size():
                 end_turn = True
             else:
