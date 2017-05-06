@@ -31,8 +31,13 @@ class GUI:
         self.entry.pack()
 
         self.entry.delete(0, tk.END)
-        self.entry.insert(0, "Choose here")
+        self.entry.insert(0, "Enter choice")
 
+        self.button = tk.Button(self.window, text="OK", command=self.ButtonEntry())
+        self.button.pack()
+
+        self.input = -1
+        self.button_pressed = False
 
     def Display_level_grid(self, level_grid, this_player):
         # print("Level Grid:")
@@ -64,14 +69,20 @@ class GUI:
     def DisplayAction(self,str):
         self.action_strs.append(str)
         self.action_text.insert(tk.END, "\n" + self.action_strs[len(self.action_strs)-1])
+        self.window.update()
 
     def Display_player_hand(self, player):
         self.player_lbl.configure(text = player.list_hand())
         self.player_lbl.pack()
         self.window.update()
 
-    def GetInput(self,question_str="Please choose:"):
-        self.entry.delete(0, tk.END)
-        self.entry.insert(0, str)
-        value = self.entry.get()
-        return value
+    def ButtonEntry(self):
+        self.input = self.entry.get()
+        self.button_pressed = True
+
+    def GetInput(self,question_str="Enter choice"):
+        self.DisplayAction(question_str)
+        while self.button_pressed == False:
+            self.window.mainloop()
+        self.button_pressed = True
+        return self.input

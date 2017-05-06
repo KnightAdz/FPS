@@ -67,7 +67,7 @@ class Player:
         self.in_cover = False
         gui.Display_player_hand(self)
         while end_turn == False:
-            card_to_play = int(input("Choose card to play: ")) #int(gui.GetInput("Choose card to play: "))
+            card_to_play = int(gui.GetInput("Choose card to play: "))#int(input("Choose card to play: ")) #
             if card_to_play >= self.hand.get_size():
                 end_turn = True
             else:
