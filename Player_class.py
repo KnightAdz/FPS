@@ -62,7 +62,6 @@ class Player:
         self.player_deck.combine_with(self.discard_deck, shuffle=1)
 
     def take_turn(self,level_grid,players,gui):
-        gui.DisplayAction(self.name + "'s turn")
         end_turn = False
         self.in_cover = False
         gui.Display_player_hand(self)

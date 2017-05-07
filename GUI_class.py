@@ -44,8 +44,7 @@ class GUI:
         self.button = tk.Button(self.window, text="OK", command=self.ButtonEntry)
         self.button.pack()
 
-        self.input = -1
-        self.button_pressed = False
+        self.card_to_play = 0
 
     def Display_level_grid(self):
         # print("Level Grid:")
@@ -77,6 +76,7 @@ class GUI:
     def DisplayAction(self,str):
         self.action_strs.append(str)
         self.action_text.insert(tk.END, "\n" + self.action_strs[len(self.action_strs)-1])
+        self.action_text.see(tk.END)
         self.window.update()
 
     def Display_player_hand(self):
@@ -88,9 +88,12 @@ class GUI:
         self.DisplayAction("Button pressed")
         card_num = -1
         target_num = -1
-        self.input = self.entry.get()
-        if self.input != "Enter choice":
-            input_value = int(self.input)
+        # Grab the text from the text box
+        input = self.entry.get()
+        # Validate input
+        if input != "Enter choice":
+            input_value = int(input)
+
             if self.game_state == "PLAYER TURN":
                 if self.turn_state == "CARD CHOICE":
                     card_num = input_value
@@ -98,34 +101,55 @@ class GUI:
                     self.DisplayAction(card_to_play.name + " card chosen")
                     self.turn_state = card_to_play.following_state()
                     if self.turn_state == "PLAY CARD":
-                        #do card action
+                        #do card action immediately
                         x=0
                     elif self.turn_state == "TARGET CHOICE":
                         self.DisplayAction("Choose target:")
                 elif self.turn_state == "TARGET CHOICE":
                     target_num = input_value
-                    self.DisplayAction("Target " + str(target_num) + " chosen")
+                    self.Validate_target(target_num,self.players[self.current_player].weapon1.rows_in_range)
                     #self.turn_state = play_card(player,card,target)
-                elif self.turn_state == "END TURN":
-                    #gather loot
+                if len(self.players[self.current_player].hand.cards) == 0:
+                    self.turn_state = "END TURN"
+                if self.turn_state == "END TURN":
+                    self.Next_turn()
 
-                    #discard hand and redraw
 
-                    #Advance to next player
-                    self.current_player += 1
-                    if self.current_player >= len(self.players):
-                        player_num = 0
-                    #check end of level
-                    #enemy_turn()
+    def Next_turn(self):
+        # gather loot
 
-        #self.Display_level_grid()
-        #self.Display_player_hand()
+        # discard hand and redraw
+        self.players[self.current_player].discard_hand()
+        self.players[self.current_player].draw_new_hand()
+        # Advance to next player
+        self.current_player += 1
+        if self.current_player >= len(self.players):
+            player_num = 0
+        self.DisplayAction(self.players[self.current_player].name + "'s turn")
+        # check end of level
+        # enemy_turn()
 
-    def GetInput(self,question_str="Enter choice"):
-        #self.DisplayAction(question_str)
-        if self.input != -1:
-            value = self.input
-            self.input = -1
-            return value
+    def Validate_target(self, target_num, rows_in_range=[1,1,1,1],affect_cover=False):
+        target_y = int(target_num / GRID_WIDTH)
+        target_x = target_num - (target_y * GRID_WIDTH)
+        target = self.level_grid[target_y][target_x]
+        if isinstance(target, Card):
+            if rows_in_range[target_y] == 0:
+                self.DisplayAction("Target is out of range of weapon, please choose another")
+                target = 0
+            elif not affect_cover and target.in_cover_to[self.current_player]:
+                self.DisplayAction("Target is in cover and cannot be hit, please choose another")
+                target = 0
+            elif target.health <= 0:
+                    self.DisplayAction("Target is already dead, please choose another")
+                    target = 0
+            else:
+                # Target is accepted
+                self.DisplayAction("Target " + str(target_num) + " chosen")
+                self.turn_state = "PLAY CARD"
+                return
         else:
-            self.window.after(1000,self.GetInput(question_str))
+            self.DisplayAction("No target here, please select a target")
+            target = 0
+
+        self.turn_state = "TARGET CHOICE"

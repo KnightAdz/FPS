@@ -86,26 +86,3 @@ class Card:
             return "PLAY CARD"
         elif self.name == "Tactical Movement":
             return "TARGET CHOICE"
-
-def choose_target(level_grid,GRID_WIDTH,this_player,rows_in_range=[1,1,1,1],affect_cover=False):
-    target = 0
-    while target == 0:
-        target_num = int(input("Choose a target:"))
-        target_y = int(target_num / GRID_WIDTH)
-        target_x = target_num - (target_y * GRID_WIDTH)
-        target = level_grid[target_y][target_x]
-        if isinstance(target,Card):
-            if rows_in_range[target_y] == 0:
-                print("Target is out of range of weapon, please choose another")
-                target = 0
-            elif not affect_cover and target.in_cover_to[this_player]:
-                print("Target is in cover and cannot be hit, please choose another")
-                target = 0
-            else:
-                if target.health <= 0:
-                    print("Target is already dead, please choose another")
-                    target = 0
-        else:
-            print("No target here, please select a target")
-            target = 0
-    return target
