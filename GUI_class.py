@@ -33,7 +33,7 @@ class GUI:
         self.entry.delete(0, tk.END)
         self.entry.insert(0, "Enter choice")
 
-        self.button = tk.Button(self.window, text="OK", command=self.ButtonEntry())
+        self.button = tk.Button(self.window, text="OK", command=self.ButtonEntry)
         self.button.pack()
 
         self.input = -1
