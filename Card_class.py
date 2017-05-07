@@ -78,6 +78,15 @@ class Card:
             target.in_cover_to[this_player] = 0
             print(target.name," is no longer behind cover to ", players[this_player].name)
 
+    def following_state(self):
+        # Return the next state to go to after this card is chosen to be played
+        if self.name == "Shot" or self.name == "Precision Shot" or self.name == "Stealth shot":
+            return "TARGET CHOICE"
+        elif self.name == "Enter Cover":
+            return "PLAY CARD"
+        elif self.name == "Tactical Movement":
+            return "TARGET CHOICE"
+
 def choose_target(level_grid,GRID_WIDTH,this_player,rows_in_range=[1,1,1,1],affect_cover=False):
     target = 0
     while target == 0:

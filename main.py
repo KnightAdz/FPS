@@ -161,8 +161,13 @@ while not quit:
     # Create the players and their decks, and the level deck
     players, level_deck = Setup_game(num_players)
 
-
-    gui = GUI(num_players)
+    level_grid = Load_level(0)
+    gui = GUI(players, level_grid)
+    gui.DisplayAction("Choose card to play:")
+    while 1:
+        gui.Display_level_grid()
+        gui.Display_player_hand()
+        gui.window.update()
 
     #Begin the game at level 1
     level = 1
