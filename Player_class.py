@@ -6,9 +6,10 @@ class Player:
     def __init__(self, name, player_deck, player_num, weapon1='Pistol', health=8):
         # Return a Card object whose name is *name* etc.
         self.name = name
-        self.weapon1 = Card(weapon1.name,weapon1.type,weapon1.subtype,weapon1.rows_in_range,weapon1.clip_size,
-                            weapon1.health,weapon1.num_targets,weapon1.damage,weapon1.text)
-        self.weapon2 = []
+        self.weapons = []
+        self.weapons.append(Card(weapon1.name,weapon1.type,weapon1.subtype,weapon1.rows_in_range,weapon1.clip_size,
+                            weapon1.health,weapon1.num_targets,weapon1.damage,weapon1.text))
+        self.weapon_equipped = self.weapons[0]
         self.health = health
         self.max_health = health
         self.armour = 0
@@ -27,9 +28,9 @@ class Player:
     ### Hand functions
     def draw_new_hand(self, cards_modifier=0):
         # Draw number of cards from deck according to weapon clipsize
-        num_cards = self.weapon1.clip_size + cards_modifier
-        if self.weapon2 != []:
-            num_cards += self.weapon2.clip_size
+        num_cards = cards_modifier
+        for i in range(0,len(self.weapons)):
+            num_cards += self.weapons[i].clip_size
         self.hand.add_to_top(self.player_deck.draw_from(num_cards))
         # If we didn't get back enough cards
         if len(self.hand.cards) < num_cards:
@@ -42,7 +43,7 @@ class Player:
 
     def discard_hand(self):
         # Discard hand
-        self.discard_pile.add_to_top(self.hand)
+        self.discard_deck.add_to_top(self.hand.cards)
 
     ### Deck functions
     def list_deck(self):
