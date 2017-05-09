@@ -10,11 +10,11 @@ class GUI:
         # Create some labels for displaying various parts of the game
         self.level_grid_lbl = tk.Label(self.window, text="Level")
         self.level_grid_lbl.pack()
-        for i in range(0, len(players)):
-            self.player_lbl = tk.Label(self.window, text="Player" + str(i + 1))
-            self.player_lbl.pack()
 
-        #Actions are a bit more complicated because we want to show a history
+        self.player_lbl = tk.Label(self.window, text="Player info")
+        self.player_lbl.pack()
+
+        # Actions are a bit more complicated because we want to show a history
         self.action_scrollbar = tk.Scrollbar(self.window)
         self.action_text = tk.Text(self.window, height=8, width=50)
         self.action_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -97,18 +97,19 @@ class GUI:
             if self.game_state == "PLAYER TURN":
                 if self.turn_state == "CARD CHOICE":
                     card_num = input_value
-                    self.card_to_play = self.players[self.current_player].hand.cards[card_num]
-                    self.DisplayAction(self.card_to_play.name + " card chosen")
-                    self.turn_state = self.card_to_play.following_state()
-                    if self.turn_state == "PLAY CARD":
-                        #do card action immediately
-                        self.turn_state = self.card_to_play.action(self, self.level_grid, self.target, self.players, self.current_player)
-                        #discard card
-                    elif self.turn_state == "WEAPON CHOICE":
-                        if len(self.players[self.current_player].weapons)>1:
-                            self.DisplayAction("Choose weapon:")
-                        else:
-                            self.turn_state = "TARGET CHOICE"
+                    if card_num > len(self.players[self.current_player].hand.cards):
+                        self.turn_state = "END TURN"
+                    else:
+                        self.card_to_play = self.players[self.current_player].hand.cards[card_num]
+                        self.DisplayAction(self.card_to_play.name + " card chosen")
+                        self.turn_state = self.card_to_play.following_state()
+                        if self.turn_state == "PLAY CARD":
+                            self.Play_Card()
+                        elif self.turn_state == "WEAPON CHOICE":
+                            if len(self.players[self.current_player].weapons)>1:
+                                self.DisplayAction("Choose weapon:")
+                            else:
+                                self.turn_state = "TARGET CHOICE"
                 elif self.turn_state == "TARGET CHOICE":
                     target_num = input_value
                     self.target = self.Validate_target(target_num, self.players[self.current_player].weapon_equipped.rows_in_range)
@@ -142,10 +143,11 @@ class GUI:
         # Advance to next player
         self.current_player += 1
         if self.current_player >= len(self.players):
-            player_num = 0
+            self.current_player = 0
         self.DisplayAction(self.players[self.current_player].name + "'s turn")
+        self.turn_state = "CARD CHOICE"
         # check end of level
-        # enemy_turn()
+        self.Enemy_turn()
 
     def Validate_target(self, target_num, rows_in_range=[1,1,1,1],affect_cover=False):
         target_y = int(target_num / GRID_WIDTH)
@@ -200,3 +202,18 @@ class GUI:
         self.players[self.current_player].hand.cards.remove(self.card_to_play)
         if len(self.players[self.current_player].hand.cards) == 0:
             self.turn_state = "END TURN"
+
+    def Enemy_turn(self):
+        for y in range(GRID_HEIGHT - 1, -1, -1):
+            for x in range(0, GRID_WIDTH):
+                if isinstance(self.level_grid[y][x], Card):
+                    if self.level_grid[y][x].retaliate and self.level_grid[y][x].health > 0:
+                        target = self.players[self.level_grid[y][x].target]
+                        self.DisplayAction(self.level_grid[y][x].name+ " retaliates against "+ target.name)
+                        if target.in_cover:
+                            print(target.name, " is in cover and takes no damage")
+                        else:
+                            target.health -= self.level_grid[y][x].damage
+                            self.DisplayAction(target.name+ " takes "+ str(self.level_grid[y][x].damage)+
+                                               " damage and has "+ str(target.health)+" health remaining")
+                        self.level_grid[y][x].retaliate = False

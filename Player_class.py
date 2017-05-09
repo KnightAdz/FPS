@@ -43,7 +43,9 @@ class Player:
 
     def discard_hand(self):
         # Discard hand
-        self.discard_deck.add_to_top(self.hand.cards)
+        if len(self.hand.cards)>0:
+            self.discard_deck.add_to_top(self.hand.cards)
+        self.hand.empty()
 
     ### Deck functions
     def list_deck(self):
@@ -87,10 +89,3 @@ class Player:
         #Discard any remaining cards
         for i in range(0,len(self.hand.cards)):
             self.discard_deck.cards.append(self.hand.cards[i])
-
-        #Draw new hand
-        if len(self.hand.cards) == 0:
-            self.draw_new_hand()
-        else:
-            self.hand.empty()
-            self.draw_new_hand()

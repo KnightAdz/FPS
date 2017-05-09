@@ -49,8 +49,8 @@ class Card:
             elif isinstance(target.loot,Card):
                 gui.DisplayAction("You gain the enemy's "+target.loot.name)
                 if target.loot.type == "Weapon":
-                    if not isinstance(players[this_player].weapon2,Card):
-                        players[this_player].weapon2 = target.loot
+                    if len(players[this_player].weapons)==1:
+                        players[this_player].weapons.append(target.loot)
                     else:
                         gui.turn_state = "WEAPON SWITCH"
                         return target.loot
