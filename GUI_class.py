@@ -149,11 +149,15 @@ class GUI:
         # check end of level
         self.Enemy_turn()
 
-    def Validate_target(self, target_num, rows_in_range=[1,1,1,1],affect_cover=False):
+    def Validate_target(self, target_num, rows_in_range=[1,1,1,1]):
+        affect_cover = False
+        if self.card_to_play.name == "Tactical Movement":
+            affect_cover = True
+
         target_y = int(target_num / GRID_WIDTH)
         target_x = target_num - (target_y * GRID_WIDTH)
         target = self.level_grid[target_y][target_x]
-        if isinstance(target, Card):
+        if isinstance(target, Card) and target.type == "Enemy":
             if rows_in_range[target_y] == 0:
                 self.DisplayAction("Target is out of range of weapon, please choose another")
             elif not affect_cover and target.in_cover_to[self.current_player]:
@@ -211,7 +215,7 @@ class GUI:
                         target = self.players[self.level_grid[y][x].target]
                         self.DisplayAction(self.level_grid[y][x].name+ " retaliates against "+ target.name)
                         if target.in_cover:
-                            print(target.name, " is in cover and takes no damage")
+                            self.DisplayAction(target.name+" is in cover and takes no damage")
                         else:
                             target.health -= self.level_grid[y][x].damage
                             self.DisplayAction(target.name+ " takes "+ str(self.level_grid[y][x].damage)+

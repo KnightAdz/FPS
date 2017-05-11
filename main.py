@@ -50,11 +50,11 @@ def Setup_game(n_players):
 
     # Create the level deck
     level_deck = Deck("Level deck")
-    level_deck.add_to_top(card_types[CT_GRUNT],num_players*10)
+    level_deck.add_to_top(card_types[CT_GRUNT],num_players*5)
     level_deck.add_to_top(card_types[CT_COMMANDER],num_players)
     level_deck.add_to_top(card_types[CT_SHOTGUN],num_players)
-    level_deck.shuffle()
     level_deck.add_to_top(card_types[CT_WALL], num_players)
+    level_deck.shuffle()
     #print("Level deck contains:")
     #level_deck.list_cards()
 
@@ -122,20 +122,6 @@ def Load_level(level_n):
         i += 1
 
     return level_grid
-
-def Enemy_turn(level_grid,players,GRID_WIDTH):
-    for y in range(GRID_HEIGHT-1,-1,-1):
-        for x in range(0,GRID_WIDTH):
-            if isinstance(level_grid[y][x],Card):
-                if level_grid[y][x].retaliate and level_grid[y][x].health > 0:
-                    target = players[level_grid[y][x].target]
-                    print(level_grid[y][x].name, " retaliates against ", target.name)
-                    if target.in_cover:
-                        print(target.name, " is in cover and takes no damage")
-                    else:
-                        target.health -= level_grid[y][x].damage
-                        print(target.name," takes ",level_grid[y][x].damage," damage and has ",target.health," health remaining")
-                    level_grid[y][x].retaliate = False
 
 def Next_level_prep():
     x = 0
