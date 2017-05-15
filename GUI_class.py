@@ -11,9 +11,6 @@ class GUI:
         self.level_grid_lbl = tk.Label(self.window, text="Level")
         self.level_grid_lbl.pack()
 
-        self.player_lbl = tk.Label(self.window, text="Player info")
-        self.player_lbl.pack()
-
         # Actions are a bit more complicated because we want to show a history
         self.action_scrollbar = tk.Scrollbar(self.window)
         self.action_text = tk.Text(self.window, height=8, width=50)
@@ -43,6 +40,9 @@ class GUI:
 
         self.button = tk.Button(self.window, text="OK", command=self.ButtonEntry)
         self.button.pack()
+
+        self.player_lbl = tk.Label(self.window, text="Player info")
+        self.player_lbl.pack()
 
         self.card_to_play = 0
         self.target = 0
@@ -90,6 +90,8 @@ class GUI:
         target_num = -1
         # Grab the text from the text box
         input = self.entry.get()
+        # Clear the text box
+        self.entry.delete(0, tk.END)
         # Validate input
         if input != "Enter choice":
             input_value = int(input)
@@ -97,19 +99,20 @@ class GUI:
             if self.game_state == "PLAYER TURN":
                 if self.turn_state == "CARD CHOICE":
                     card_num = input_value
-                    if card_num > len(self.players[self.current_player].hand.cards):
+                    if card_num >= len(self.players[self.current_player].hand.cards):
                         self.turn_state = "END TURN"
                     else:
                         self.card_to_play = self.players[self.current_player].hand.cards[card_num]
                         self.DisplayAction(self.card_to_play.name + " card chosen")
-                        self.turn_state = self.card_to_play.following_state()
+                        self.turn_state = self.card_to_play.following_state
                         if self.turn_state == "PLAY CARD":
                             self.Play_Card()
-                        elif self.turn_state == "WEAPON CHOICE":
-                            if len(self.players[self.current_player].weapons)>1:
-                                self.DisplayAction("Choose weapon:")
-                            else:
-                                self.turn_state = "TARGET CHOICE"
+                        # If we should choose a weapon but only have one, skip straight to target choice
+                        elif self.turn_state == "WEAPON CHOICE" and len(self.players[self.current_player].weapons)==1:
+                            self.turn_state = "TARGET CHOICE"
+                elif self.turn_state == "WEAPON CHOICE":
+                    weapon_choice = input_value
+                    self.Choose_weapon(weapon_choice)
                 elif self.turn_state == "TARGET CHOICE":
                     target_num = input_value
                     self.target = self.Validate_target(target_num, self.players[self.current_player].weapon_equipped.rows_in_range)
@@ -140,14 +143,22 @@ class GUI:
         # discard hand and redraw
         self.players[self.current_player].discard_hand()
         self.players[self.current_player].draw_new_hand()
+
+        # Let enemies retaliate
+        self.Enemy_turn()
+
+        # remove player from cover
+        self.players[self.current_player].in_cover = False
+
         # Advance to next player
         self.current_player += 1
         if self.current_player >= len(self.players):
             self.current_player = 0
         self.DisplayAction(self.players[self.current_player].name + "'s turn")
         self.turn_state = "CARD CHOICE"
+
         # check end of level
-        self.Enemy_turn()
+
 
     def Validate_target(self, target_num, rows_in_range=[1,1,1,1]):
         affect_cover = False
@@ -174,20 +185,23 @@ class GUI:
 
         return False
 
-    def choose_weapon(self):
-        # Need to choose a weapon unless we only have 1
-        weapon = players[this_player].weapon1
-        if isinstance(players[this_player].weapon2, Card):
-            print("You have 2 weapons: 1:", str(players[this_player].weapon1), " 2: ",
-                  str(players[this_player].weapon2))
-            weapon_num = int(input("Choose which weapon:"))
-            if weapon_num == 2:
-                weapon = players[this_player].weapon2
+    def Choose_weapon(self, weapon_choice):
+        weapon_choice -= 1
+        if weapon_choice < 0:
+            weapon_choice = 0
+        elif weapon_choice >= len(self.players[self.current_player].weapons):
+            weapon_choice = len(self.players[self.current_player].weapons)-1
+        self.players[self.current_player].weapon_equipped = self.players[self.current_player].weapons[weapon_choice]
+        self.turn_state = "TARGET CHOICE"
 
     def Set_new_state(self):
         if self.game_state == "PLAYER TURN":
             if self.turn_state == "CARD CHOICE":
                 self.DisplayAction("Choose a card:")
+            elif self.turn_state == "WEAPON CHOICE":
+                self.DisplayAction("Choose a weapon to fire:")
+                self.DisplayAction("1. "+self.players[self.current_player].weapons[0].name)
+                self.DisplayAction("2. " + self.players[self.current_player].weapons[1].name)
             elif self.turn_state == "TARGET CHOICE":
                 self.DisplayAction("Choose a target:")
             elif self.turn_state == "PLAY CARD":

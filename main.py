@@ -16,10 +16,10 @@ CT_SHOTGUN = 2
 CT_SHOT = 19
 CT_TACT = 22 # Tactical movement
 CT_ENTCOV = 21 # Enter cover
+CT_1STAID = 23
 
 CT_GRUNT = 12
 CT_COMMANDER = 15
-
 CT_WALL = 16
 CT_BARREL = 17
 
@@ -34,7 +34,7 @@ def Load_cards():
                           cards_df.loc[i, "Subtype"], rows_in_range,
                           cards_df.loc[i, "clip size"],cards_df.loc[i,"health"],
                           cards_df.loc[i, "no. targets"],cards_df.loc[i,"damage"],
-                          cards_df.loc[i, "Text"]))
+                          cards_df.loc[i, "Text"],cards_df.loc[i, "Following State"]))
         #print(len(card_types), " ", card_types[len(card_types)-1])
     return card_types
 
@@ -97,7 +97,7 @@ def Load_level(level_n):
         if this_level_cards[i].type == "Enemy" or this_level_cards[i].type == "Environment":
             level_grid[y][x] = Card(this_level_cards[i].name,this_level_cards[i].type,this_level_cards[i].subtype,this_level_cards[i].rows_in_range,
                                     this_level_cards[i].clip_size,this_level_cards[i].health,
-                                    this_level_cards[i].num_targets,this_level_cards[i].damage,this_level_cards[i].text)
+                                    this_level_cards[i].num_targets,this_level_cards[i].damage,this_level_cards[i].text,this_level_cards[i].following_state)
             # Keep track of which enemies are in cover due to the environment
             if this_level_cards[i].type == "Environment":
                 coverx.append(x)
@@ -117,7 +117,7 @@ def Load_level(level_n):
             # Record the number of the target that has the same space as the weapon
             level_grid[last_enemy_loc[1]][last_enemy_loc[0]].loot = Card(this_level_cards[i].name,this_level_cards[i].type,this_level_cards[i].subtype,this_level_cards[i].rows_in_range,
                                                                         this_level_cards[i].clip_size,this_level_cards[i].health,
-                                                                        this_level_cards[i].num_targets,this_level_cards[i].damage,this_level_cards[i].text)
+                                                                        this_level_cards[i].num_targets,this_level_cards[i].damage,this_level_cards[i].text,this_level_cards[i].following_state)
             level_grid[last_enemy_loc[1]][last_enemy_loc[0]].damage += this_level_cards[i].damage-1
         i += 1
 

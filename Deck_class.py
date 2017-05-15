@@ -11,7 +11,8 @@ class Deck:
         if cards != []:
             for i in range(0,len(cards)):
                 self.cards.append(Card(cards[i].name,cards[i].type,cards[i].subtype,cards[i].rows_in_range,
-                                       cards[i].clip_size,cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text))
+                                       cards[i].clip_size,cards[i].health,cards[i].num_targets,cards[i].damage,
+                                       cards[i].text,cards[i].following_state))
 
     def list_cards(self):
         card_str = ""
@@ -52,8 +53,8 @@ class Deck:
         else:
             for j in range(0,copies):
                 for i in range(0,len(cards)):
-                    self.cards.append(Card(cards[i].name, cards[i].subtype, cards[i].rows_in_range, cards[i].clip_size,
-                                           cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text))
+                    self.cards.append(Card(cards[i].name, cards[i].type, cards[i].subtype, cards[i].rows_in_range, cards[i].clip_size,
+                                           cards[i].health,cards[i].num_targets,cards[i].damage,cards[i].text,cards[i].following_state))
 
     def combine_with(self, other_deck, shuffle=1):
         # Combine two decks to make one deck
