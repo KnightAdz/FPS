@@ -41,7 +41,7 @@ class GUI:
         self.button = tk.Button(self.window, text="OK", command=self.ButtonEntry)
         self.button.pack()
 
-        self.player_lbl = tk.Label(self.window, text="Player info")
+        self.player_lbl = tk.Label(self.window,text="Player info")
         self.player_lbl.pack()
 
         self.card_to_play = 0
@@ -49,29 +49,36 @@ class GUI:
 
     def Display_level_grid(self):
         # print("Level Grid:")
-        lootstr = ""
-        pstr = ""
+
+        allstr = ""
         for y in range(GRID_HEIGHT - 1, -1, -1):
+            lootstr = "\t"
+            pstr = ""
             for x in range(0, GRID_WIDTH):
                 id = y * GRID_WIDTH + x
                 pstr += str(id) + " "
                 if not isinstance(self.level_grid[y][x], Card):
                     # Print empty space
                     pstr += "[\t]"
+                    lootstr += "\t"
                 else:
                     if self.level_grid[y][x].in_cover_to[self.current_player]:
                         pstr += "("
                     pstr += str(self.level_grid[y][x])
                     if self.level_grid[y][x].in_cover_to[self.current_player]:
                         pstr += ")"
+                    if self.level_grid[y][x].type != "Enemy":
+                        lootstr += "\t"
                     if isinstance(self.level_grid[y][x].loot, Card):
-                        lootstr += "Enemy " + str(id) + " has a " + self.level_grid[y][x].loot.name + "\n"
+                        #lootstr += "Enemy " + str(id) + " has a " + self.level_grid[y][x].loot.name + "\n"
+                        lootstr += self.level_grid[y][x].loot.name + "\t\t\t"
                 if x < GRID_WIDTH - 1:
                     pstr += "\t\t"
-            pstr += "\n\n"
+            #pstr += "\n\n"
+            allstr += pstr + "\n" + lootstr + "\n\n"
 
-        pstr = pstr + lootstr
-        self.level_grid_lbl.configure(text=pstr)
+        #pstr = pstr + lootstr
+        self.level_grid_lbl.configure(text=allstr)
         self.window.update()
 
     def DisplayAction(self,str):

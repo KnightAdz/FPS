@@ -52,11 +52,17 @@ def Setup_game(n_players):
     level_deck = Deck("Level deck")
     level_deck.add_to_top(card_types[CT_GRUNT],num_players*5)
     level_deck.add_to_top(card_types[CT_COMMANDER],num_players)
-    level_deck.add_to_top(card_types[CT_SHOTGUN],num_players)
     level_deck.add_to_top(card_types[CT_WALL], num_players)
     level_deck.shuffle()
-    #print("Level deck contains:")
-    #level_deck.list_cards()
+
+    # Create the weapons and skills deck
+    weapon_deck = Deck("Weapon deck")
+    weapon_deck.add_to_top(card_types[CT_SHOTGUN], num_players)
+    weapon_deck.add_to_top(card_types[CT_SHOT], num_players*5)
+    weapon_deck.add_to_top(card_types[CT_1STAID], num_players*5)
+    weapon_deck.add_to_top(card_types[CT_TACT], num_players*5)
+    weapon_deck.add_to_top(card_types[CT_ENTCOV], num_players*3)
+    weapon_deck.shuffle()
 
     # Create a default player deck
     starting_deck = Deck("Starting deck")
@@ -70,11 +76,8 @@ def Setup_game(n_players):
         players.append(Player("Player "+str(i+1),starting_deck,i+1, weapon1=card_types[CT_PISTOL]))
         print("Player %d has joined the game" % len(players))
         players[i].draw_new_hand()
-        # players[i].list_deck()
-        # players[i].list_discard_pile()
-        # players[i].list_hand()
 
-    return players, level_deck
+    return players, level_deck, weapon_deck
 
 def Load_level(level_n):
     # Number of level cards should scale up to 16 (##LATER: could be enemies?)
@@ -113,12 +116,21 @@ def Load_level(level_n):
             if x >= GRID_WIDTH:
                 x = 0
                 y += 1
-        elif this_level_cards[i].type == "Weapon":
-            # Record the number of the target that has the same space as the weapon
-            level_grid[last_enemy_loc[1]][last_enemy_loc[0]].loot = Card(this_level_cards[i].name,this_level_cards[i].type,this_level_cards[i].subtype,this_level_cards[i].rows_in_range,
-                                                                        this_level_cards[i].clip_size,this_level_cards[i].health,
-                                                                        this_level_cards[i].num_targets,this_level_cards[i].damage,this_level_cards[i].text,this_level_cards[i].following_state)
-            level_grid[last_enemy_loc[1]][last_enemy_loc[0]].damage += this_level_cards[i].damage-1
+
+            if len(weapon_deck.cards)>0:
+                # While the weapon & skills deck isn't empty, give enemies loot
+                level_grid[last_enemy_loc[1]][last_enemy_loc[0]].loot = Card(weapon_deck.cards[0].name,
+                                                                             weapon_deck.cards[0].type,
+                                                                             weapon_deck.cards[0].subtype,
+                                                                             weapon_deck.cards[0].rows_in_range,
+                                                                             weapon_deck.cards[0].clip_size,
+                                                                             weapon_deck.cards[0].health,
+                                                                             weapon_deck.cards[0].num_targets,
+                                                                             weapon_deck.cards[0].damage,
+                                                                             weapon_deck.cards[0].text,
+                                                                             weapon_deck.cards[0].following_state)
+                level_grid[last_enemy_loc[1]][last_enemy_loc[0]].damage += weapon_deck.cards[0].damage-1
+                del(weapon_deck.cards[0])
         i += 1
 
     return level_grid
@@ -145,7 +157,7 @@ while not quit:
     #num_players = input('How many players?')
     num_players = 2
     # Create the players and their decks, and the level deck
-    players, level_deck = Setup_game(num_players)
+    players, level_deck, weapon_deck = Setup_game(num_players)
 
     level_grid = Load_level(0)
     gui = GUI(players, level_grid)
