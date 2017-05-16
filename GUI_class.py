@@ -71,9 +71,10 @@ class GUI:
                         lootstr += "\t"
                     if isinstance(self.level_grid[y][x].loot, Card):
                         #lootstr += "Enemy " + str(id) + " has a " + self.level_grid[y][x].loot.name + "\n"
-                        lootstr += self.level_grid[y][x].loot.name + "\t\t\t"
+                        lootstr += self.level_grid[y][x].loot.name + "\t"
                 if x < GRID_WIDTH - 1:
                     pstr += "\t\t"
+                    lootstr += "\t\t"
             #pstr += "\n\n"
             allstr += pstr + "\n" + lootstr + "\n\n"
 
