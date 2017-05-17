@@ -52,11 +52,13 @@ class Card:
             elif isinstance(target.loot,Card):
                 gui.DisplayAction("You gain the enemy's "+target.loot.name)
                 if target.loot.type == "Weapon":
-                    if len(players[this_player].weapons)==1:
+                    if len(players[this_player].weapons) == 1:
                         players[this_player].weapons.append(target.loot)
                     else:
                         gui.turn_state = "WEAPON SWITCH"
                         return target.loot
+                else:
+                    players[this_player].discard_deck.cards.append(target.loot)
             return "CARD CHOICE"
         elif self.name == "Enter Cover":
             players[this_player].in_cover = True
@@ -65,10 +67,10 @@ class Card:
             target.in_cover_to[this_player] = 0
             gui.DisplayAction(target.name+" is no longer behind cover to "+players[this_player].name)
         elif self.name == "Adrenaline Injection":
-            players[this_player].heal(self.damage)
+            players[this_player].heal(-self.damage)
             gui.DisplayAction(players[this_player].name + " now has " + str(players[this_player].health) + " health.")
         elif self.name == "First Aid":
-            target.heal(self.damage)
+            target.heal(-self.damage)
             gui.DisplayAction(target.name + " now has " + str(players[this_player].health) + " health.")
 
         return "CARD CHOICE"

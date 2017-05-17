@@ -13,15 +13,35 @@ MAX_LEVEL = 4
 CT_PISTOL = 0
 CT_UZI = 1
 CT_SHOTGUN = 2
-CT_SHOT = 19
-CT_TACT = 22 # Tactical movement
-CT_ENTCOV = 21 # Enter cover
-CT_1STAID = 23
-
+CT_ARIFLE = 3
+CT_BRIFLE = 4
+CT_SRIFLE = 5
+CT_ROCKET = 6
+CT_FRAG = 7
+CT_FLASHBANG = 8
+CT_SMOKE = 9
+CT_HELMET = 10
+CT_ARMOUR = 11
 CT_GRUNT = 12
+CT_GRENADIER = 13
+CT_SHIELDGUY = 14
 CT_COMMANDER = 15
 CT_WALL = 16
 CT_BARREL = 17
+CT_SNIPER = 18
+CT_SHOT = 19
+CT_PREC = 20
+CT_ENTCOV = 21
+CT_TACT = 22
+CT_1STAID = 23
+CT_ADRI = 24
+CT_HIDE = 25
+CT_RELOAD = 26
+CT_TAKECOVER = 27
+CT_COORDINATION = 28
+CT_STEALTH = 29
+CT_MARKTARGET = 30
+
 
 def Load_cards():
     # Load card stats from CSV file
@@ -117,7 +137,7 @@ def Load_level(level_n):
                 x = 0
                 y += 1
 
-            if len(weapon_deck.cards)>0:
+            if len(weapon_deck.cards)>0 and not(this_level_cards[i].type=="Environment" and i==0):
                 # While the weapon & skills deck isn't empty, give enemies loot
                 level_grid[last_enemy_loc[1]][last_enemy_loc[0]].loot = Card(weapon_deck.cards[0].name,
                                                                              weapon_deck.cards[0].type,
@@ -129,7 +149,7 @@ def Load_level(level_n):
                                                                              weapon_deck.cards[0].damage,
                                                                              weapon_deck.cards[0].text,
                                                                              weapon_deck.cards[0].following_state)
-                level_grid[last_enemy_loc[1]][last_enemy_loc[0]].damage += weapon_deck.cards[0].damage-1
+                level_grid[last_enemy_loc[1]][last_enemy_loc[0]].damage += weapon_deck.cards[0].damage
                 del(weapon_deck.cards[0])
         i += 1
 

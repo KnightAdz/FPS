@@ -173,7 +173,7 @@ class GUI:
         if self.card_to_play.name == "Tactical Movement":
             affect_cover = True
 
-        target_y = int(target_num / GRID_WIDTH)
+        target_y = min(int(target_num / GRID_WIDTH),GRID_HEIGHT)
         target_x = target_num - (target_y * GRID_WIDTH)
         target = self.level_grid[target_y][target_x]
         if isinstance(target, Card) and target.type == "Enemy":

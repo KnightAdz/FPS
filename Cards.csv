@@ -22,8 +22,8 @@ Index,Name,Type,Subtype,row1,row2,row3,row4,clip size,health,no. targets,damage,
 21,Precision Shot,Action,,1,1,1,1,0,99,1,2,do precision shot of one of your weapons,,WEAPON CHOICE
 22,Enter Cover,Action,,1,1,1,1,0,99,1,0,"to be played at end of turn, negates any damage before next turn",,PLAY CARD
 23,Tactical Movement,Action,,1,1,1,1,0,99,1,0,negate enemy cover / reveal to dodge enemy grenade,,TARGET CHOICE
-24,First Aid,Action,,1,1,1,1,0,99,2,-4,choose one other player to heal by 4 points of health,,PLAYER CHOICE
-25,Adrenaline Injection,Action,,1,1,1,1,0,99,1,-2,heal self by 2 points of health,,PLAY CARD
+24,First Aid,Action,,1,1,1,1,0,99,2,4,choose one other player to heal by 4 points of health,,PLAYER CHOICE
+25,Adrenaline Injection,Action,,1,1,1,1,0,99,1,2,heal self by 2 points of health,,PLAY CARD
 26,Hide,Action,,1,1,1,1,0,99,1,0,allow shield to recharge,,PLAY CARD
 27,Reload,Action,,1,1,1,1,0,99,1,0,discard any number of cards and draw that number of cards,,CARD CHOICE
 28,Take Cover,Action,,1,1,1,1,0,99,2,0,choose one other player and take their damage on next turn instead of them (damage is halved?),,PLAYER CHOICE
